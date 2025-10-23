@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Noha App | نوحہ ایپ</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: url('https://upload.wikimedia.org/wikipedia/commons/4/4e/Imam_Hussain_Shrine_at_night.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      text-align: center;
+    }
+    .overlay {
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+    h1 {
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+    h2 {
+      font-size: 28px;
+      margin-bottom: 30px;
+    }
+    select, button {
+      padding: 10px;
+      font-size: 16px;
+      margin: 10px;
+      border-radius: 5px;
+      border: none;
+    }
+    button {
+      background-color: #d4af37;
+      color: black;
+      cursor: pointer;
+    }
+    .video {
+      margin: 30px auto;
+      max-width: 600px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      border-radius: 10px;
+    }
+    iframe {
+      width: 100%;
+      height: 250px;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <h1>Noha App</h1>
+    <h2>نوحہ ایپ</h2>
+    <p>Nohay Collection by Singer</p>
+    <select id="singerSelect">
+      <option value="Ali Jani Nohay">Ali Jani</option>
+      <option value="Farhan Ali Waris Nohay">Farhan Ali Waris</option>
+      <option value="Nadeem Sarwar Nohay">Nadeem Sarwar</option>
+      <option value="Irfan Haider Nohay">Irfan Haider</option>
+      <option value="Mir Hasan Mir Nohay">Mir Hasan Mir</option>
+      <option value="Sajid Rizvi Nohay">Sajid Rizvi</option>
+      <option value="Shadman Raza Nohay">Shadman Raza</option>
+      <option value="Ali Zia Rizvi Nohay">Ali Zia Rizvi</option>
+      <option value="Sachay Rizvi Nohay">Sachay Rizvi</option>
+      <option value="Arib Hadi Nohay">Arib Hadi</option>
+    </select>
+    <button onclick="fetchVideos()">Fetch Nohay</button>
+
+    <div id="results"></div>
+  </div>
+
+  <script>
+    const apiKey = 'AIzaSyCf2Aw4sIWyRrpO56b1FbcYpEEGOrrtL9M';
+
+    function fetchVideos() {
+      const singer = document.getElementById('singerSelect').value;
+      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(singer)}&type=video&maxResults=25&key=${apiKey}`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          const resultsDiv = document.getElementById('results');
+          resultsDiv.innerHTML = '';
+          if (!data.items || data.items.length === 0) {
+            resultsDiv.innerHTML = '<p>No videos found.</p>';
+            return;
+          }
+          data.items.forEach(item => {
+            const videoId = item.id.videoId;
+            const title = item.snippet.title;
+            resultsDiv.innerHTML += `
+              <div class="video">
+                <h3>${title}</h3>
+                <iframe src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe>
+              </div>
+            `;
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching videos:', error);
+          document.getElementById('results').innerHTML = '<p>Something went wrong. Please check your API key or try again later.</p>';
+        });
+    }
+  </script>
+</body>
+</html>
